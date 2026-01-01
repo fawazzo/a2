@@ -20,21 +20,24 @@ const CustomerLogin = () => {
       login(data);
       navigate('/customer/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Check your credentials.');
+      // Çevrilmiş Hata Mesajı
+      setError(err.response?.data?.message || 'Giriş başarısız oldu. Bilgilerinizi kontrol edin.');
     }
   };
 
   return (
     <div className="flex justify-center items-center py-10">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-primary-dark mb-6">Customer Login</h2>
+        {/* Başlık Çevirisi */}
+        <h2 className="text-3xl font-bold text-center text-primary-dark mb-6">Müşteri Girişi</h2>
         
         {error && <p className="text-red-500 bg-red-100 p-3 rounded-md mb-4 text-sm">{error}</p>}
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
+            {/* Etiket Çevirisi */}
             <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="email">
-              Email
+              E-posta
             </label>
             <input
               type="email"
@@ -46,8 +49,9 @@ const CustomerLogin = () => {
             />
           </div>
           <div className="mb-6">
+            {/* Etiket Çevirisi */}
             <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="password">
-              Password
+              Şifre
             </label>
             <input
               type="password"
@@ -62,13 +66,16 @@ const CustomerLogin = () => {
             type="submit"
             className="w-full bg-primary-orange hover:bg-primary-orange/90 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
           >
-            Sign In
+            {/* Buton Metni Çevirisi */}
+            Giriş Yap
           </button>
         </form>
         <p className="mt-6 text-center text-gray-600">
-          New here?{' '}
+          {/* Metin Çevirisi */}
+          Yeni misiniz?{' '}
           <Link to="/customer/register" className="text-primary-orange hover:underline font-medium">
-            Register Account
+            {/* Bağlantı Metni Çevirisi */}
+            Hesap Aç
           </Link>
         </p>
       </div>

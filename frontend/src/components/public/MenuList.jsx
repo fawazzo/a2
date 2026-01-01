@@ -2,6 +2,7 @@
 import React from 'react';
 
 // Utility to group items by category
+// Öğeleri kategoriye göre gruplamak için yardımcı işlev
 const groupByCategory = (menu) => {
   return menu.reduce((acc, item) => {
     (acc[item.category] = acc[item.category] || []).push(item);
@@ -18,7 +19,8 @@ const MenuListItem = ({ item, addToCart }) => (
                     alt={item.name} 
                     className="w-20 h-20 object-cover rounded-md flex-shrink-0" 
                     // Mock fallback image if URL is broken
-                    onError={(e) => {e.target.onerror = null; e.target.src="https://via.placeholder.com/80/FF8C00/FFFFFF?text=Food"}} 
+                    // URL bozuksa sahte yedek resim
+                    onError={(e) => {e.target.onerror = null; e.target.src="https://via.placeholder.com/80/FF8C00/FFFFFF?text=Yemek"}} // Metin çevirisi
                 />
             )}
             <div>
@@ -38,7 +40,8 @@ const MenuListItem = ({ item, addToCart }) => (
                 }
             `}
         >
-            {item.isAvailable ? 'Add' : 'Sold Out'}
+            {/* Buton Metni Çevirisi */}
+            {item.isAvailable ? 'Ekle' : 'Tükendi'}
         </button>
     </div>
 );
@@ -51,6 +54,7 @@ const MenuList = ({ menu, addToCart }) => {
     <div className="space-y-8">
       {categories.map(category => (
         <div key={category} className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* Başlık (Kategori) Çevrilmesi Gerekir (e.g., Ana Yemek, Başlangıç) - Bu, MenuItemForm'daki çevrilmiş kategorilere bağlıdır */}
           <h3 className="text-2xl font-bold p-4 bg-primary-orange text-white sticky top-0">
             {category}
           </h3>

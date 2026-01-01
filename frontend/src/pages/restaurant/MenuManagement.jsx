@@ -18,7 +18,8 @@ const MenuManagement = () => {
             setMenuItems(data);
             setLoading(false);
         } catch (err) {
-            setError('Failed to fetch menu items.');
+            // Hata mesajı çevirisi
+            setError('Menü öğeleri alınamadı.');
             setLoading(false);
         }
     };
@@ -40,27 +41,33 @@ const MenuManagement = () => {
     };
 
     const handleDeleteItem = async (itemId) => {
-        if (window.confirm('Are you sure you want to delete this menu item?')) {
+        // Onay metni çevirisi
+        if (window.confirm('Bu menü öğesini silmek istediğinizden emin misiniz?')) {
             try {
                 await axios.delete(`/api/menu/${itemId}`);
                 setMenuItems(menuItems.filter(item => item._id !== itemId));
-                alert('Item deleted successfully.');
+                // Uyarı metni çevirisi
+                alert('Öğe başarıyla silindi.');
             } catch (err) {
-                alert('Failed to delete item.');
+                // Uyarı metni çevirisi
+                alert('Öğe silinemedi.');
             }
         }
     };
 
-    if (loading) return <div className="text-center text-xl">Loading Menu Manager...</div>;
+    // Yüklenme metni çevirisi
+    if (loading) return <div className="text-center text-xl">Menü Yöneticisi Yükleniyor...</div>;
     if (error) return <div className="text-center text-red-500 text-xl">{error}</div>;
 
     return (
         <div className="space-y-10">
-            <h1 className="text-4xl font-extrabold text-primary-orange">Menu Management</h1>
+            {/* Başlık Çevirisi */}
+            <h1 className="text-4xl font-extrabold text-primary-orange">Menü Yönetimi</h1>
             
-            {/* Menu Item Form (Add/Edit) */}
+            {/* Menu Item Form (Add/Edit) / Menü Öğesi Formu (Ekle/Düzenle) */}
             <div className="bg-white p-6 rounded-xl shadow-2xl">
-                <h2 className="text-2xl font-bold text-primary-dark mb-4">{editingItem ? 'Edit Item' : 'Add New Menu Item'}</h2>
+                {/* Başlık Çevirisi */}
+                <h2 className="text-2xl font-bold text-primary-dark mb-4">{editingItem ? 'Öğeyi Düzenle' : 'Yeni Menü Öğesi Ekle'}</h2>
                 <MenuItemForm 
                     initialData={editingItem} 
                     onSave={handleSaveItem} 
@@ -68,31 +75,48 @@ const MenuManagement = () => {
                 />
             </div>
 
-            {/* List of Current Menu Items */}
+            {/* List of Current Menu Items / Mevcut Menü Öğeleri Listesi */}
             <div className="bg-white p-6 rounded-xl shadow-2xl">
-                <h2 className="text-2xl font-bold text-primary-dark mb-4">Current Menu ({menuItems.length})</h2>
+                {/* Başlık Çevirisi */}
+                <h2 className="text-2xl font-bold text-primary-dark mb-4">Mevcut Menü ({menuItems.length})</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {menuItems.map(item => (
-                        <div key={item._id} className="p-4 border rounded-lg flex justify-between items-center bg-secondary-light">
-                            <div>
+                        <div key={item._id} className="p-4 border rounded-lg flex items-center bg-secondary-light">
+                            {/* ADDED: Image Display */}
+                            {item.imageUrl && (
+                                <div className="w-16 h-16 flex-shrink-0 mr-4">
+                                    <img 
+                                        src={item.imageUrl} 
+                                        alt={item.name} 
+                                        className="w-full h-full object-cover rounded-lg"
+                                    />
+                                </div>
+                            )}
+
+                            <div className="flex-grow">
                                 <h3 className="font-bold text-lg">{item.name}</h3>
+                                {/* Fiyat ve Kategori zaten formda çevrildi */}
                                 <p className="text-sm text-gray-600">{item.price} TL | {item.category}</p>
+                                {/* Durum metni çevirisi */}
                                 <span className={`text-xs font-medium ${item.isAvailable ? 'text-green-600' : 'text-red-600'}`}>
-                                    {item.isAvailable ? 'Available' : 'Unavailable'}
+                                    {item.isAvailable ? 'Mevcut' : 'Mevcut Değil'}
                                 </span>
                             </div>
-                            <div className="space-x-2">
+                            
+                            <div className="flex-shrink-0 space-x-2 ml-4">
                                 <button 
                                     onClick={() => setEditingItem(item)}
                                     className="text-sm py-1 px-3 rounded-md bg-blue-500 text-white hover:bg-blue-600"
                                 >
-                                    Edit
+                                    {/* Buton Metni Çevirisi */}
+                                    Düzenle
                                 </button>
                                 <button 
                                     onClick={() => handleDeleteItem(item._id)}
                                     className="text-sm py-1 px-3 rounded-md bg-red-500 text-white hover:bg-red-600"
                                 >
-                                    Delete
+                                    {/* Buton Metni Çevirisi */}
+                                    Sil
                                 </button>
                             </div>
                         </div>

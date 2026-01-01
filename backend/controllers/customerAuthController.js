@@ -7,7 +7,8 @@ import generateToken from '../utils/generateToken.js';
 // @route   POST /api/auth/customer/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, address } = req.body;
+  // Capture new fields: fullAddress, il, ilce
+  const { name, email, password, fullAddress, il, ilce } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -20,7 +21,9 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
-    address,
+    fullAddress,
+    il,
+    ilce,
     role: 'customer',
   });
 
@@ -29,6 +32,9 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      fullAddress: user.fullAddress, // Updated field
+      il: user.il,                   // Added
+      ilce: user.ilce,               // Added
       role: user.role,
       token: generateToken(user._id, user.role),
     });
@@ -51,6 +57,9 @@ const authUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      fullAddress: user.fullAddress, // Updated field
+      il: user.il,                   // Added
+      ilce: user.ilce,               // Added
       role: user.role,
       token: generateToken(user._id, user.role),
     });
@@ -64,7 +73,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/customer/me
 // @access  Private (Customer)
 const getUserProfile = asyncHandler(async (req, res) => {
-    // req.user is set by the protect middleware
+    // req.user now contains fullAddress, il, ilce
     res.json(req.user);
 });
 

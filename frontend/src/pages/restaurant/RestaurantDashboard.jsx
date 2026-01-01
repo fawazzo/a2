@@ -18,7 +18,8 @@ const RestaurantDashboard = () => {
             setOrders(data);
             setLoading(false);
         } catch (err) {
-            setError('Failed to fetch restaurant orders.');
+            // Hata mesajı çevirisi
+            setError('Restoran siparişleri alınamadı.');
             setLoading(false);
         }
     };
@@ -38,14 +39,17 @@ const RestaurantDashboard = () => {
                     order._id === orderId ? data : order
                 )
             );
-            alert(`Order ${orderId} status updated to ${newStatus}`);
+            // Başarı mesajı çevirisi
+            alert(`Sipariş ${orderId} durumu ${newStatus} olarak güncellendi`);
 
         } catch (err) {
-            alert(`Error updating status: ${err.response?.data?.message || 'Invalid transition.'}`);
+            // Hata mesajı çevirisi
+            alert(`Durum güncellenirken hata oluştu: ${err.response?.data?.message || 'Geçersiz geçiş.'}`);
         }
     };
 
-    if (loading) return <div className="text-center text-xl text-primary-dark">Loading Dashboard...</div>;
+    // Yüklenme metni çevirisi
+    if (loading) return <div className="text-center text-xl text-primary-dark">Kontrol Paneli Yükleniyor...</div>;
     if (error) return <div className="text-center text-red-500 text-xl">{error}</div>;
 
     const activeOrders = orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status));
@@ -53,28 +57,33 @@ const RestaurantDashboard = () => {
 
     return (
         <div className="space-y-10">
-            <h1 className="text-4xl font-extrabold text-primary-orange">Welcome Back, {user.name}</h1>
+            {/* Başlık Çevirisi */}
+            <h1 className="text-4xl font-extrabold text-primary-orange">Tekrar Hoş Geldiniz, {user.name}</h1>
             
-            {/* Quick Actions */}
+            {/* Quick Actions / Hızlı İşlemler */}
             <div className="flex space-x-4">
                 <Link 
                     to="/restaurant/menu" 
                     className="bg-primary-dark text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-dark/90 transition shadow-lg"
                 >
-                    Manage Menu Items
+                    {/* Buton Metni Çevirisi */}
+                    Menü Öğelerini Yönet
                 </Link>
                 <div className="bg-white p-3 rounded-lg shadow-md flex items-center">
                     <span className="text-xl font-bold text-primary-orange">{activeOrders.length}</span>
-                    <span className="ml-2 text-gray-600">Active Orders</span>
+                    {/* Metin Çevirisi */}
+                    <span className="ml-2 text-gray-600">Aktif Sipariş</span>
                 </div>
             </div>
 
-            {/* Active Orders Section */}
+            {/* Active Orders Section / Aktif Siparişler Bölümü */}
             <div className="bg-white p-6 rounded-xl shadow-2xl">
-                <h2 className="text-3xl font-bold text-primary-dark mb-6">Current Incoming Orders</h2>
+                {/* Başlık Çevirisi */}
+                <h2 className="text-3xl font-bold text-primary-dark mb-6">Mevcut Gelen Siparişler</h2>
                 
                 {activeOrders.length === 0 ? (
-                    <p className="text-gray-500 italic">No new or active orders at this time.</p>
+                    // Metin Çevirisi
+                    <p className="text-gray-500 italic">Şu anda yeni veya aktif sipariş bulunmamaktadır.</p>
                 ) : (
                     <OrderList 
                         orders={activeOrders} 
@@ -84,9 +93,10 @@ const RestaurantDashboard = () => {
                 )}
             </div>
 
-            {/* History Section */}
+            {/* History Section / Geçmiş Bölümü */}
             <div className="bg-white p-6 rounded-xl shadow-2xl">
-                <h2 className="text-3xl font-bold text-primary-dark mb-6">Order History ({completedOrders.length})</h2>
+                {/* Başlık Çevirisi */}
+                <h2 className="text-3xl font-bold text-primary-dark mb-6">Sipariş Geçmişi ({completedOrders.length})</h2>
                 {completedOrders.length > 0 && (
                     <OrderList 
                         orders={completedOrders} 

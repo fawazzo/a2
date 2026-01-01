@@ -19,14 +19,16 @@ const CustomerOrders = () => {
                 setOrders(data);
                 setLoading(false);
             } catch (err) {
-                setError('Failed to fetch your orders.');
+                // Hata Mesajı Çevirisi
+                setError('Siparişleriniz alınamadı.');
                 setLoading(false);
             }
         };
         fetchOrders();
     }, []);
 
-    if (loading) return <div className="text-center text-xl text-primary-dark">Loading Orders...</div>;
+    // Yüklenme Metni Çevirisi
+    if (loading) return <div className="text-center text-xl text-primary-dark">Siparişler Yükleniyor...</div>;
     if (error) return <div className="text-center text-red-500 text-xl">{error}</div>;
 
     const activeOrders = orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status));
@@ -35,14 +37,17 @@ const CustomerOrders = () => {
 
     return (
         <div className="space-y-10">
-            <h1 className="text-4xl font-extrabold text-primary-orange">Your Order History</h1>
+            {/* Başlık Çevirisi */}
+            <h1 className="text-4xl font-extrabold text-primary-orange">Sipariş Geçmişiniz</h1>
             
-            {/* Active Orders Section */}
+            {/* Active Orders Section / Aktif Siparişler Bölümü */}
             <div className="bg-white p-6 rounded-xl shadow-2xl">
-                <h2 className="text-3xl font-bold text-primary-dark mb-6">Active Orders ({activeOrders.length})</h2>
+                {/* Başlık Çevirisi */}
+                <h2 className="text-3xl font-bold text-primary-dark mb-6">Aktif Siparişler ({activeOrders.length})</h2>
                 
                 {activeOrders.length === 0 ? (
-                    <p className="text-gray-500 italic">You have no orders currently being processed.</p>
+                    // Metin Çevirisi
+                    <p className="text-gray-500 italic">Şu anda işlenmekte olan siparişiniz bulunmamaktadır.</p>
                 ) : (
                     <OrderList 
                         orders={activeOrders} 
@@ -51,16 +56,18 @@ const CustomerOrders = () => {
                 )}
             </div>
 
-            {/* History Section */}
+            {/* History Section / Tamamlanan Siparişler Bölümü */}
             <div className="bg-white p-6 rounded-xl shadow-2xl">
-                <h2 className="text-3xl font-bold text-primary-dark mb-6">Completed Orders ({historyOrders.length})</h2>
+                {/* Başlık Çevirisi */}
+                <h2 className="text-3xl font-bold text-primary-dark mb-6">Tamamlanan Siparişler ({historyOrders.length})</h2>
                 {historyOrders.length > 0 ? (
                     <OrderList 
                         orders={historyOrders} 
                         isRestaurantView={false} 
                     />
                 ) : (
-                    <p className="text-gray-500 italic">You haven't completed any orders yet.</p>
+                    // Metin Çevirisi
+                    <p className="text-gray-500 italic">Henüz tamamlanmış bir siparişiniz bulunmamaktadır.</p>
                 )}
             </div>
         </div>

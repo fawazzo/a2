@@ -5,6 +5,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import customerAuthRoutes from './routes/customerAuthRoutes.js';
 import restaurantAuthRoutes from './routes/restaurantAuthRoutes.js';
+import deliveryAuthRoutes from './routes/deliveryAuthRoutes.js'; // NEW IMPORT
 import restaurantRoutes from './routes/restaurantRoutes.js';
 import menuRoutes from './routes/menuRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -25,6 +26,7 @@ app.use(express.json()); // Allows parsing of JSON request body
 // Define Routes
 app.use('/api/auth/customer', customerAuthRoutes);
 app.use('/api/auth/restaurant', restaurantAuthRoutes);
+app.use('/api/auth/delivery', deliveryAuthRoutes); // NEW ROUTE
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);

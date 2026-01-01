@@ -7,8 +7,11 @@ const userSchema = mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    address: { type: String },
-    role: { type: String, default: 'customer', enum: ['customer'] },
+    // Replaced generic 'address' with granular fields:
+    fullAddress: { type: String }, // Detailed street address
+    il: { type: String },          // Province (Il)
+    ilce: { type: String },         // District (Ilce)
+    role: { type: String, default: 'customer', enum: ['customer', 'delivery'] }, // MODIFIED: Added 'delivery'
   },
   { timestamps: true }
 );

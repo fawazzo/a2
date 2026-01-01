@@ -9,7 +9,12 @@ const restaurantSchema = mongoose.Schema(
     password: { type: String, required: true },
     description: { type: String },
     cuisineType: { type: String, required: true },
-    address: { type: String, required: true },
+    
+    // Updated Address Structure:
+    fullAddress: { type: String, required: true }, // Detailed street address
+    il: { type: String, required: true },          // Province (Il)
+    ilce: { type: String, required: true },         // District (Ilce)
+
     minOrderValue: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
     role: { type: String, default: 'restaurant', enum: ['restaurant'] },

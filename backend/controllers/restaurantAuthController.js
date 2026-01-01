@@ -7,7 +7,8 @@ import generateToken from '../utils/generateToken.js';
 // @route   POST /api/auth/restaurant/register
 // @access  Public
 const registerRestaurant = asyncHandler(async (req, res) => {
-    const { name, email, password, cuisineType, address, description } = req.body;
+    // Capture new fields: fullAddress, il, ilce. Old 'address' field in req.body is ignored.
+    const { name, email, password, cuisineType, fullAddress, il, ilce, description } = req.body;
 
     const restaurantExists = await Restaurant.findOne({ email });
 
@@ -17,7 +18,15 @@ const registerRestaurant = asyncHandler(async (req, res) => {
     }
 
     const restaurant = await Restaurant.create({
-        name, email, password, cuisineType, address, description, role: 'restaurant'
+        name, 
+        email, 
+        password, 
+        cuisineType, 
+        fullAddress, // New field
+        il,          // New field
+        ilce,        // New field
+        description, 
+        role: 'restaurant'
     });
 
     if (restaurant) {
@@ -25,6 +34,10 @@ const registerRestaurant = asyncHandler(async (req, res) => {
             _id: restaurant._id,
             name: restaurant.name,
             email: restaurant.email,
+            cuisineType: restaurant.cuisineType,
+            fullAddress: restaurant.fullAddress,
+            il: restaurant.il,
+            ilce: restaurant.ilce,
             role: restaurant.role,
             token: generateToken(restaurant._id, restaurant.role),
         });
@@ -47,6 +60,10 @@ const authRestaurant = asyncHandler(async (req, res) => {
             _id: restaurant._id,
             name: restaurant.name,
             email: restaurant.email,
+            cuisineType: restaurant.cuisineType,
+            fullAddress: restaurant.fullAddress, // Added to response
+            il: restaurant.il,                   // Added to response
+            ilce: restaurant.ilce,               // Added to response
             role: restaurant.role,
             token: generateToken(restaurant._id, restaurant.role),
         });
@@ -60,7 +77,7 @@ const authRestaurant = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/restaurant/me
 // @access  Private (Restaurant)
 const getRestaurantProfile = asyncHandler(async (req, res) => {
-    // req.user is set by the protect middleware
+    // req.user contains all fields including fullAddress, il, ilce
     res.json(req.user);
 });
 

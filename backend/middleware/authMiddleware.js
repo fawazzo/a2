@@ -18,9 +18,9 @@ const protect = asyncHandler(async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Determine which model to search based on the role in the token
-      if (decoded.role === 'customer') {
+      if (decoded.role === 'customer' || decoded.role === 'delivery') { // MODIFIED: Added 'delivery'
         req.user = await User.findById(decoded.id).select('-password');
-        req.userRole = 'customer';
+        req.userRole = decoded.role; // Use decoded role for precision
       } else if (decoded.role === 'restaurant') {
         req.user = await Restaurant.findById(decoded.id).select('-password');
         req.userRole = 'restaurant';

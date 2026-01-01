@@ -24,6 +24,11 @@ const orderSchema = mongoose.Schema(
       required: true,
       ref: 'Restaurant',
     },
+    deliveryPerson: { // ADDED FIELD
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User', // References the User model for the delivery person
+      required: false,
+    },
     items: [orderItemSchema], // Array of the embedded orderItemSchema
     totalAmount: {
       type: Number,
@@ -38,7 +43,7 @@ const orderSchema = mongoose.Schema(
       type: String,
       required: true,
       default: 'Pending',
-      enum: ['Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'],
+      enum: ['Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivering', 'Delivered', 'Cancelled'], // MODIFIED: Added 'Delivering'
     },
   },
   { timestamps: true }

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const defaultCategories = ['Main Dish', 'Appetizer', 'Dessert', 'Drink', 'Side'];
+// Varsayılan Kategoriler Çevirisi
+const defaultCategories = ['Ana Yemek', 'Başlangıç', 'Tatlı', 'İçecek', 'Yan Lezzet'];
 
 const MenuItemForm = ({ initialData, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -28,6 +29,7 @@ const MenuItemForm = ({ initialData, onSave, onCancel }) => {
             });
         } else {
             // Reset form for new item
+            // Yeni ürün için formu sıfırla
             setFormData({
                 name: '', description: '', price: 0, category: defaultCategories[0], imageUrl: '', isAvailable: true,
             });
@@ -50,10 +52,10 @@ const MenuItemForm = ({ initialData, onSave, onCancel }) => {
         try {
             let response;
             if (initialData) {
-                // UPDATE request
+                // GÜNCELLEME isteği
                 response = await axios.put(`/api/menu/${initialData._id}`, formData);
             } else {
-                // CREATE request
+                // OLUŞTURMA isteği
                 response = await axios.post('/api/menu', formData);
             }
             
@@ -61,7 +63,8 @@ const MenuItemForm = ({ initialData, onSave, onCancel }) => {
             setLoading(false);
             
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to save item.');
+            // Hata mesajı çevirisi
+            setError(err.response?.data?.message || 'Ürün kaydedilemedi.');
             setLoading(false);
         }
     };
@@ -72,42 +75,50 @@ const MenuItemForm = ({ initialData, onSave, onCancel }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block font-medium text-gray-700">Name</label>
+                    {/* Etiket Çevirisi */}
+                    <label className="block font-medium text-gray-700">Ad</label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-primary-orange" />
                 </div>
                 <div>
-                    <label className="block font-medium text-gray-700">Price (TL)</label>
+                    {/* Etiket Çevirisi */}
+                    <label className="block font-medium text-gray-700">Fiyat (TL)</label>
                     <input type="number" name="price" value={formData.price} onChange={handleChange} required min="0" step="0.01" className="w-full px-3 py-2 border rounded-lg focus:ring-primary-orange" />
                 </div>
             </div>
 
             <div>
-                <label className="block font-medium text-gray-700">Description</label>
+                {/* Etiket Çevirisi */}
+                <label className="block font-medium text-gray-700">Açıklama</label>
                 <textarea name="description" value={formData.description} onChange={handleChange} rows="2" className="w-full px-3 py-2 border rounded-lg focus:ring-primary-orange"></textarea>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block font-medium text-gray-700">Category</label>
+                    {/* Etiket Çevirisi */}
+                    <label className="block font-medium text-gray-700">Kategori</label>
                     <select name="category" value={formData.category} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-primary-orange">
+                        {/* Kategoriler otomatik çevrildi */}
                         {defaultCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                     </select>
                 </div>
                 <div>
-                    <label className="block font-medium text-gray-700">Image URL (Mock)</label>
+                    {/* Etiket Çevirisi */}
+                    <label className="block font-medium text-gray-700">Görsel URL'si (Örnek)</label>
                     <input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg focus:ring-primary-orange" />
                 </div>
             </div>
 
             <div className="flex items-center space-x-2">
                 <input type="checkbox" id="isAvailable" name="isAvailable" checked={formData.isAvailable} onChange={handleChange} className="w-4 h-4 text-primary-orange border-gray-300 rounded focus:ring-primary-orange" />
-                <label htmlFor="isAvailable" className="font-medium text-gray-700">Currently Available</label>
+                {/* Etiket Çevirisi */}
+                <label htmlFor="isAvailable" className="font-medium text-gray-700">Şu Anda Mevcut</label>
             </div>
 
             <div className="flex justify-end space-x-3 pt-4">
                 {initialData && (
                     <button type="button" onClick={onCancel} className="bg-gray-300 text-primary-dark py-2 px-4 rounded-lg font-semibold hover:bg-gray-400">
-                        Cancel Edit
+                        {/* Buton Metni Çevirisi */}
+                        Düzenlemeyi İptal Et
                     </button>
                 )}
                 <button
@@ -115,7 +126,8 @@ const MenuItemForm = ({ initialData, onSave, onCancel }) => {
                     disabled={loading}
                     className="bg-primary-orange text-white py-2 px-4 rounded-lg font-semibold hover:bg-primary-orange/90 disabled:bg-gray-400 transition"
                 >
-                    {loading ? 'Saving...' : (initialData ? 'Update Item' : 'Create Item')}
+                    {/* Buton Metni Çevirisi */}
+                    {loading ? 'Kaydediliyor...' : (initialData ? 'Ürünü Güncelle' : 'Ürün Oluştur')}
                 </button>
             </div>
         </form>
