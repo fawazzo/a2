@@ -3,6 +3,10 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { X, Plus, Minus, Trash2, ChevronLeft, CreditCard, DollarSign } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
+// --- NEW CONSTANT: DELIVERY FEE ---
+const DELIVERY_FEE = 50.00;
+// ----------------------------------
+
 // Define the minimum required date for this specific fake payment system rule (02/26)
 const MIN_EXPIRY_MONTH = 2; // February
 const MIN_EXPIRY_YEAR = 26; // 2026
@@ -27,7 +31,13 @@ const GlobalCartModal = ({ cart, updateQuantity, removeFromCart, handleCheckout,
     const cardExpiryInputRef = useRef(null); 
     const cardCvvInputRef = useRef(null);   
 
-    const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    // --- MODIFIED: Calculate Totals ---
+    // 1. Calculate Subtotal (only menu items)
+    const subTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    // 2. Calculate Final Total (items + fee)
+    const finalTotal = subTotal + DELIVERY_FEE;
+    // ----------------------------------
+
 
     // --- Card Detail Handlers with Minimal Logic for Performance ---
 
@@ -196,7 +206,8 @@ const GlobalCartModal = ({ cart, updateQuantity, removeFromCart, handleCheckout,
     };
 
     const checkoutButtonText = isAuthenticated && role === 'customer' 
-        ? (checkoutStep === 'cart' ? `Ödeme Adımına Geç (${totalAmount.toFixed(2)} TL)` : `Siparişi Tamamla`)
+        // --- MODIFIED: Use finalTotal ---
+        ? (checkoutStep === 'cart' ? `Ödeme Adımına Geç (${finalTotal.toFixed(2)} TL)` : `Siparişi Tamamla`)
         : 'Sipariş vermek için Giriş Yapın';
         
     const isCheckoutDisabled = cart.length === 0 || !isAuthenticated || role !== 'customer';
@@ -228,11 +239,22 @@ const GlobalCartModal = ({ cart, updateQuantity, removeFromCart, handleCheckout,
                     </button>
                 </div>
 
-                {/* Total Display - (Unchanged) */}
-                <div className="bg-primary-orange/10 p-4 rounded-lg flex justify-between items-center mb-6">
-                    <span className="text-lg font-semibold text-primary-dark">Toplam Tutar:</span>
-                    <span className="text-2xl font-bold text-primary-orange">{totalAmount.toFixed(2)} TL</span>
+                {/* Total Breakdown Display - MODIFIED */}
+                <div className="bg-primary-orange/10 p-4 rounded-lg mb-6 space-y-2">
+                    <div className="flex justify-between text-sm text-gray-700">
+                        <span>Ürün Toplamı:</span>
+                        <span>{subTotal.toFixed(2)} TL</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-semibold text-primary-dark border-b border-dashed pb-2">
+                        <span>Teslimat Ücreti:</span>
+                        <span>{DELIVERY_FEE.toFixed(2)} TL</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-2">
+                        <span className="text-lg font-semibold text-primary-dark">Toplam Tutar:</span>
+                        <span className="text-2xl font-bold text-primary-orange">{finalTotal.toFixed(2)} TL</span>
+                    </div>
                 </div>
+                {/* End Total Breakdown Display */}
                 
                 {/* Card Error Display - Shows error on final submit, or other generic errors */}
                 {cardError && (
@@ -354,14 +376,15 @@ const GlobalCartModal = ({ cart, updateQuantity, removeFromCart, handleCheckout,
                                 : 'bg-primary-orange text-white hover:bg-primary-orange/90 shadow-md'
                         }`}
                     >
-                        {`Şimdi Sipariş Ver (${totalAmount.toFixed(2)} TL)`}
+                        {/* --- MODIFIED: Use finalTotal --- */}
+                        {`Şimdi Sipariş Ver (${finalTotal.toFixed(2)} TL)`}
                     </button>
                 </div>
             </div>
         );
     };
 
-    // --- RENDER CART STEP CONTENT (Omitted for brevity) ---
+    // --- RENDER CART STEP CONTENT (Modified for Breakdown) ---
     const CartStep = () => (
         <>
             {/* Header */}
@@ -413,11 +436,22 @@ const GlobalCartModal = ({ cart, updateQuantity, removeFromCart, handleCheckout,
                 )}
             </div>
 
-            {/* Footer / Checkout Button */}
+            {/* Footer / Checkout Button - MODIFIED for Breakdown */}
             <div className="mt-6 border-t pt-4 flex-shrink-0">
-                <div className="flex justify-between text-xl font-bold mb-4">
-                    <span>Toplam Tutar:</span>
-                    <span className="text-primary-orange">{totalAmount.toFixed(2)} TL</span>
+                {/* Total Breakdown Display - NEW */}
+                <div className="mb-4 space-y-1">
+                    <div className="flex justify-between text-md text-gray-700">
+                        <span>Ürünler ({cart.length} Çeşit):</span>
+                        <span>{subTotal.toFixed(2)} TL</span>
+                    </div>
+                    <div className="flex justify-between text-md text-primary-dark">
+                        <span>Teslimat Ücreti:</span>
+                        <span className="font-semibold">{DELIVERY_FEE.toFixed(2)} TL</span>
+                    </div>
+                    <div className="flex justify-between text-xl font-bold border-t pt-2">
+                        <span>Toplam Tutar:</span>
+                        <span className="text-primary-orange">{finalTotal.toFixed(2)} TL</span>
+                    </div>
                 </div>
                 
                 <button

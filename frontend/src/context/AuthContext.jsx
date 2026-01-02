@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(parsedUser);
                 setRole(parsedUser.role); 
                 
-                // Set default auth header for all subsequent requests
+                // Set default auth header for all subsequent requests IMMEDIATELY
                 axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
             } else {
                 // If user data is incomplete, force logout/clear storage
@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }) => {
     setUser(userDetails);
     setRole(userDetails.role);
     
+    // Set header on login
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   };
 
@@ -74,6 +75,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     setRole(null);
+    // Clear header on logout
     delete axios.defaults.headers.common['Authorization'];
   };
 

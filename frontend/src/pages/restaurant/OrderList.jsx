@@ -51,6 +51,9 @@ const OrderList = ({ orders, handleStatusUpdate, isRestaurantView = false }) => 
         
         // Only show action button if it's the restaurant/delivery view AND there is a defined next step.
         const showActionButton = isRestaurantView && currentStatusData.next; 
+        
+        // Calculate subtotal for item display
+        const subTotal = order.items.reduce((acc, item) => acc + item.quantity * item.priceAtTimeOfOrder, 0);
 
         return (
             <div className="bg-secondary-light p-4 rounded-lg shadow-md border border-gray-200">
@@ -73,8 +76,8 @@ const OrderList = ({ orders, handleStatusUpdate, isRestaurantView = false }) => 
                         <div>
                             {/* Metin Çevirisi */}
                             <p className="text-lg font-bold text-primary-dark">Restoran: {order.restaurant.name}</p>
-                            {/* Metin Çevirisi */}
-                            <p className="text-sm text-gray-500">Toplam: {order.totalAmount.toFixed(2)} TL</p>
+                            {/* MODIFIED: Total is now displayed below the detailed breakdown */}
+                            {/* <p className="text-sm text-gray-500">Toplam: {order.totalAmount.toFixed(2)} TL</p> */}
                         </div>
                     )}
                     
@@ -84,7 +87,7 @@ const OrderList = ({ orders, handleStatusUpdate, isRestaurantView = false }) => 
                 </div>
 
                 {/* Items / Ürünler */}
-                <ul className="text-sm text-gray-700 space-y-1 my-3">
+                <ul className="text-sm text-gray-700 space-y-1 my-3 border-b pb-3">
                     {order.items.map((item, index) => (
                         <li key={index} className="flex justify-between">
                             {/* Metin Çevirisi */}
@@ -92,7 +95,23 @@ const OrderList = ({ orders, handleStatusUpdate, isRestaurantView = false }) => 
                             <span className="font-medium">{(item.quantity * item.priceAtTimeOfOrder).toFixed(2)} TL</span>
                         </li>
                     ))}
+                    
+                    {/* NEW: DISPLAY DELIVERY FEE */}
+                    {/* Check if deliveryFee is present and greater than 0 */}
+                    {order.deliveryFee > 0 && (
+                        <li className="flex justify-between pt-1 border-t border-dashed mt-1">
+                            <span className="font-semibold text-primary-dark">Teslimat Ücreti</span>
+                            <span className="font-semibold text-primary-dark">{order.deliveryFee.toFixed(2)} TL</span>
+                        </li>
+                    )}
                 </ul>
+
+                {/* FINAL TOTAL (Visible for both Restaurant and Customer) */}
+                <div className="flex justify-between items-center pt-2">
+                    <span className="text-lg font-bold text-primary-dark">Sipariş Toplamı</span>
+                    <span className="text-lg font-bold text-primary-dark">{order.totalAmount.toFixed(2)} TL</span>
+                </div>
+
 
                 {/* Restaurant Action Buttons / Restoran Eylem Butonları */}
                 {showActionButton && (

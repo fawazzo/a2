@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
 import MenuItem from '../models/menuItemModel.js';
 import Restaurant from '../models/restaurantModel.js';
-import User from '../models/userModel.js'; // Needed for delivery user population
+import User from '../models/userModel.js'; 
 
 // --- Customer Logic ---
 
@@ -46,6 +46,11 @@ const addOrderItems = asyncHandler(async (req, res) => {
     });
     totalAmount += dbItem.price * item.quantity;
   }
+  
+  // --- MODIFICATION: ADD FIXED DELIVERY FEE (50 TL) ---
+  const deliveryFee = 50.00;
+  totalAmount += deliveryFee;
+  // ----------------------------------------------------
 
   // Determine the customer address snapshot for the order.
   // Priority: 1. Address sent in request body. 2. Constructed address from user profile.
@@ -75,6 +80,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
     restaurant: restaurantId,
     items: validatedItems,
     totalAmount: totalAmount,
+    deliveryFee: deliveryFee, // ADDED: Set the fee on the order
     customerAddress: finalCustomerAddress, 
     status: 'Pending',
   });
@@ -134,6 +140,22 @@ const getActiveDeliveries = asyncHandler(async (req, res) => {
     const orders = await Order.find({ 
         deliveryPerson: req.user._id,
         status: 'Delivering' 
+    })
+    .populate('customer', 'name email fullAddress il ilce') 
+    .populate('restaurant', 'name fullAddress il ilce') 
+    .sort({ createdAt: -1 });
+
+    res.json(orders);
+});
+
+// @desc    Get all completed orders for the logged-in delivery person
+// @route   GET /api/orders/delivery/history
+// @access  Private/Delivery
+const getDeliveryHistory = asyncHandler(async (req, res) => {
+    // Orders that are assigned and are completed
+    const orders = await Order.find({ 
+        deliveryPerson: req.user._id,
+        status: 'Delivered' 
     })
     .populate('customer', 'name email fullAddress il ilce') 
     .populate('restaurant', 'name fullAddress il ilce') 
@@ -239,6 +261,27 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   // 3. Perform the update
   order.status = status;
   
+  // --- MODIFIED LOGIC: PAY DELIVERY PERSON UPON 'Delivered' STATUS ---
+  if (status === 'Delivered' && order.deliveryPerson) {
+      // Use findByIdAndUpdate to atomically update the balance, bypassing pre('save') hooks.
+      const updatedDeliveryUser = await User.findByIdAndUpdate(
+          order.deliveryPerson,
+          { $inc: { deliveryBalance: order.deliveryFee } }, // Atomically increment by deliveryFee
+          { new: true } // Return the updated document (optional for this controller)
+      );
+
+      if (updatedDeliveryUser) {
+          console.log(`Delivery person ${updatedDeliveryUser.name} balance updated by ${order.deliveryFee} TL.`);
+      } else {
+          // Log an error if the user was not found, but allow the order status to update
+          console.error(`ERROR: Delivery user ${order.deliveryPerson} not found for balance update.`);
+      }
+      
+      // Clear the deliveryPerson field after delivery is complete
+      order.deliveryPerson = null; 
+  }
+  // -------------------------------------------------------------
+  
   // Clean up deliveryPerson field if cancelled before assignment
   if (status === 'Cancelled' && order.deliveryPerson) {
        order.deliveryPerson = null; 
@@ -256,4 +299,5 @@ export {
   getAvailableOrders, 
   getActiveDeliveries, 
   acceptDelivery, 
+  getDeliveryHistory, // <--- NEW EXPORT
 };

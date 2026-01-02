@@ -7,9 +7,10 @@ import {
   getMyOrders,
   getRestaurantOrders,
   updateOrderStatus,
-  getAvailableOrders, // NEW
-  getActiveDeliveries, // NEW
-  acceptDelivery, // EXISTING but modified logic
+  getAvailableOrders, 
+  getActiveDeliveries, 
+  acceptDelivery, 
+  getDeliveryHistory, // <--- NEW IMPORT
 } from '../controllers/orderController.js';
 
 // Customer: Place a new order
@@ -26,6 +27,9 @@ router.route('/delivery/available').get(protect, authorize('delivery'), getAvail
 
 // Delivery: View active assigned orders (Delivering)
 router.route('/delivery/active').get(protect, authorize('delivery'), getActiveDeliveries);
+
+// --- NEW ROUTE: Delivery History ---
+router.route('/delivery/history').get(protect, authorize('delivery'), getDeliveryHistory);
 
 // Delivery: Accept an order (sets assignment and status to 'Delivering')
 router.route('/:id/accept').put(protect, authorize('delivery'), acceptDelivery);

@@ -5,31 +5,48 @@ import { useAuth } from '../../context/AuthContext';
 import OrderList from '../restaurant/OrderList'; 
 
 const DeliveryDashboard = () => {
-    const { user } = useAuth();
-    const [availableOrders, setAvailableOrders] = useState([]); // Orders ready for pickup (status: Out for Delivery, unassigned)
-    const [activeDeliveries, setActiveDeliveries] = useState([]); // Orders actively being delivered (status: Delivering, assigned to user)
+    const { user, login, token } = useAuth(); 
+    const [availableOrders, setAvailableOrders] = useState([]);
+    const [activeDeliveries, setActiveDeliveries] = useState([]);
+    // --- NEW STATE ---
+    const [deliveryHistory, setDeliveryHistory] = useState([]); 
+    // -----------------
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch both lists of orders
+    // Fetch all lists of orders
     const fetchOrders = useCallback(async () => {
+        if (!token) { 
+            setLoading(false);
+            return; 
+        } 
+        
         try {
             setLoading(true);
             
-            // 1. Fetch orders ready for *this* delivery person (Active Deliveries - status: Delivering)
+            // 1. Fetch Active Deliveries
             const { data: activeData } = await axios.get('/api/orders/delivery/active');
             setActiveDeliveries(activeData);
             
-            // 2. Fetch orders ready for *any* delivery person (Available Orders - status: Out for Delivery)
+            // 2. Fetch Available Orders
             const { data: availableData } = await axios.get('/api/orders/delivery/available');
             setAvailableOrders(availableData);
+
+            // --- NEW FETCH: Delivery History ---
+            const { data: historyData } = await axios.get('/api/orders/delivery/history');
+            setDeliveryHistory(historyData);
+            // -----------------------------------
             
             setLoading(false);
         } catch (err) {
-            setError('Sipariş listeleri alınamadı.');
+            if (err.response && err.response.status === 401) {
+                setError('Oturum zaman aşımına uğradı veya yetkiniz yok. Lütfen tekrar giriş yapın.');
+            } else {
+                setError('Sipariş listeleri alınamadı.');
+            }
             setLoading(false);
         }
-    }, []);
+    }, [token]);
 
     useEffect(() => {
         fetchOrders();
@@ -57,10 +74,20 @@ const DeliveryDashboard = () => {
         if (!window.confirm('Siparişi tamamlandı (Teslim Edildi) olarak işaretlemek istediğinizden emin misiniz?')) return;
         
         try {
-            const { data } = await axios.put(`/api/orders/${orderId}/status`, { status: newStatus });
+            const { data: orderUpdateData } = await axios.put(`/api/orders/${orderId}/status`, { status: newStatus });
             
-            alert(`Sipariş ${orderId} durumu ${newStatus} olarak güncellendi.`);
-            fetchOrders(); // Re-fetch to remove from active list
+            alert(`Sipariş ${orderId} durumu ${newStatus} olarak güncellendi. Bakiyeniz güncellendi.`);
+            
+            const { data: userData } = await axios.get(`/api/auth/delivery/me`);
+            
+            const updatedUserData = {
+                ...userData,
+                token: token, 
+            };
+            
+            login(updatedUserData); 
+            
+            fetchOrders(); // Re-fetch to update all lists (removes from active, adds to history)
 
         } catch (err) {
             alert(`Durum güncellenirken hata oluştu: ${err.response?.data?.message || 'Geçersiz geçiş.'}`);
@@ -87,11 +114,11 @@ const DeliveryDashboard = () => {
         </div>
     );
     
-    // CORRECTED: Simple wrapper to pass active deliveries to OrderList without status override.
+    // Simple wrapper to pass active deliveries to OrderList without status override.
     const ActiveOrderListWrapper = ({ orders }) => {
         return (
             <OrderList 
-                orders={orders} // PASS THE ORDERS WITH CORRECT STATUS ('Delivering')
+                orders={orders} 
                 handleStatusUpdate={handleStatusUpdate} 
                 isRestaurantView={true} 
             />
@@ -103,6 +130,14 @@ const DeliveryDashboard = () => {
             {/* Başlık Çevirisi */}
             <h1 className="text-4xl font-extrabold text-primary-dark">Teslimat Kontrol Paneli, {user.name}</h1>
             
+            {/* DELIVERY BALANCE CARD */}
+            <div className="bg-primary-dark text-white p-6 rounded-xl shadow-2xl flex justify-between items-center">
+                <h2 className="text-3xl font-bold">Kazanılan Bakiye</h2>
+                <span className="text-4xl font-extrabold text-primary-orange">
+                    {user.deliveryBalance?.toFixed(2) || '0.00'} TL
+                </span>
+            </div>
+
             {/* 1. Available Orders (Ready for Pickup) */}
             <div className="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-primary-orange">
                 <h2 className="text-3xl font-bold text-primary-dark mb-6">TESLİMAT İÇİN HAZIR (Bekleyen) ({availableOrders.length})</h2>
@@ -126,6 +161,22 @@ const DeliveryDashboard = () => {
                     <ActiveOrderListWrapper orders={activeDeliveries} />
                 )}
             </div>
+            
+            {/* --- NEW SECTION: DELIVERY HISTORY --- */}
+            <div className="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-green-500">
+                <h2 className="text-3xl font-bold text-primary-dark mb-6">TAMAMLANAN TESLİMATLARIM ({deliveryHistory.length})</h2>
+                
+                {deliveryHistory.length === 0 ? (
+                    <p className="text-gray-500 italic">Daha önce tamamladığınız bir teslimat bulunmamaktadır.</p>
+                ) : (
+                    // Display history using OrderList, setting isRestaurantView=false to remove action buttons
+                    <OrderList 
+                        orders={deliveryHistory} 
+                        isRestaurantView={false} 
+                    />
+                )}
+            </div>
+            {/* ------------------------------------- */}
         </div>
     );
 };

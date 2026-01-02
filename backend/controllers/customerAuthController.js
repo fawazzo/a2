@@ -37,6 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
       ilce: user.ilce,               // Added
       role: user.role,
       token: generateToken(user._id, user.role),
+      // NOTE: Intentionally excluded 'deliveryBalance'
     });
   } else {
     res.status(400);
@@ -62,6 +63,7 @@ const authUser = asyncHandler(async (req, res) => {
       ilce: user.ilce,               // Added
       role: user.role,
       token: generateToken(user._id, user.role),
+      // NOTE: Intentionally excluded 'deliveryBalance'
     });
   } else {
     res.status(401);
@@ -73,7 +75,8 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/customer/me
 // @access  Private (Customer)
 const getUserProfile = asyncHandler(async (req, res) => {
-    // req.user now contains fullAddress, il, ilce
+    // req.user contains fullAddress, il, ilce, and deliveryBalance (which should be 0)
+    // You can filter out deliveryBalance here if desired, but for now, we leave it as req.user is already selecting fewer fields in middleware.
     res.json(req.user);
 });
 

@@ -16,7 +16,7 @@ const registerDelivery = asyncHandler(async (req, res) => {
     throw new Error('Delivery account already exists with this email');
   }
 
-  // Create delivery user with minimal required fields
+  // Create delivery user with minimal required fields (deliveryBalance defaults to 0)
   const user = await User.create({
     name,
     email,
@@ -31,6 +31,8 @@ const registerDelivery = asyncHandler(async (req, res) => {
       email: user.email,
       role: user.role,
       token: generateToken(user._id, user.role),
+      // --- ADDED BALANCE ---
+      deliveryBalance: user.deliveryBalance, 
     });
   } else {
     res.status(400);
@@ -53,6 +55,8 @@ const authDelivery = asyncHandler(async (req, res) => {
       email: user.email,
       role: user.role,
       token: generateToken(user._id, user.role),
+      // --- ADDED BALANCE ---
+      deliveryBalance: user.deliveryBalance,
     });
   } else {
     res.status(401);
@@ -64,6 +68,7 @@ const authDelivery = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/delivery/me
 // @access  Private (Delivery)
 const getDeliveryProfile = asyncHandler(async (req, res) => {
+    // req.user will now contain deliveryBalance because the model includes it
     res.json(req.user);
 });
 

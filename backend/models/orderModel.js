@@ -35,6 +35,13 @@ const orderSchema = mongoose.Schema(
       required: true,
       default: 0.0,
     },
+    // --- NEW FIELD FOR DELIVERY FEE ---
+    deliveryFee: { 
+      type: Number,
+      required: true,
+      default: 50.00, // Fixed 50 TL fee
+    },
+    // ----------------------------------
     customerAddress: {
       type: String, // Snapshot of where the food is going
       required: true,
