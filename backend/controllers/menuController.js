@@ -12,7 +12,7 @@ const getMenuItemsByRestaurant = asyncHandler(async (req, res) => {
     res.json(menuItems);
   } else {
     res.status(404);
-    throw new Error('No menu items found for this restaurant');
+    throw new Error('Bu restorana ait menü öğesi bulunamadı');
   }
 });
 
@@ -49,7 +49,7 @@ const updateMenuItem = asyncHandler(async (req, res) => {
     // Security check: Ensure the item belongs to the logged-in restaurant
     if (menuItem.restaurant.toString() !== req.user._id.toString()) {
       res.status(401);
-      throw new Error('Not authorized to update this menu item');
+      throw new Error('Bu menü öğesini güncellemeye yetkiniz yok');
     }
 
     menuItem.name = name || menuItem.name;
@@ -63,7 +63,7 @@ const updateMenuItem = asyncHandler(async (req, res) => {
     res.json(updatedItem);
   } else {
     res.status(404);
-    throw new Error('Menu item not found');
+    throw new Error('Menü öğesi bulunamadı');
   }
 });
 
@@ -77,14 +77,14 @@ const deleteMenuItem = asyncHandler(async (req, res) => {
     // Security check: Ensure the item belongs to the logged-in restaurant
     if (menuItem.restaurant.toString() !== req.user._id.toString()) {
       res.status(401);
-      throw new Error('Not authorized to delete this menu item');
+      throw new Error('Bu menü öğesini silmeye yetkiniz yok');
     }
 
     await MenuItem.deleteOne({ _id: menuItem._id });
     res.json({ message: 'Menu item removed' });
   } else {
     res.status(404);
-    throw new Error('Menu item not found');
+    throw new Error('Menü öğesi bulunamadı');
   }
 });
 

@@ -25,7 +25,7 @@ const getRestaurantById = asyncHandler(async (req, res) => {
     res.json(restaurant);
   } else {
     res.status(404);
-    throw new Error('Restaurant not found or inactive');
+    throw new Error('Restoran bulunamadı veya etkin değil');
   }
 });
 
@@ -38,7 +38,7 @@ const updateRestaurantProfile = asyncHandler(async (req, res) => {
     // Security Check: Ensure the logged-in user is the owner of this restaurant
     if (!restaurant || restaurant._id.toString() !== req.user._id.toString()) {
         res.status(401);
-        throw new Error('Not authorized to update this restaurant');
+        throw new Error('Bu restoranı güncellemeye yetkiniz yok');
     }
 
     if (restaurant) {
@@ -71,7 +71,7 @@ const updateRestaurantProfile = asyncHandler(async (req, res) => {
         });
     } else {
         res.status(404);
-        throw new Error('Restaurant not found');
+        throw new Error('Restoran bulunamadı');
     }
 });
 

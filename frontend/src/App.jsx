@@ -34,7 +34,7 @@ import './App.css';
 const ProtectedRoute = ({ element, requiredRole }) => {
   const { isAuthenticated, role, loading } = useAuth();
   
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Yükleniyor...</div>;
 
   if (!isAuthenticated) {
     return <Navigate to="/" />;

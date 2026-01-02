@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!token,
   };
 
-  if (loading) return <div className="text-center p-10 text-xl text-primary-orange">Loading Application...</div>; 
+  if (loading) return <div className="text-center p-10 text-xl text-primary-orange">Yükleniyor...</div>; 
 
   return (
     <AuthContext.Provider value={contextValue}>

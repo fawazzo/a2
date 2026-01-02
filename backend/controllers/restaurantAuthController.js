@@ -14,7 +14,7 @@ const registerRestaurant = asyncHandler(async (req, res) => {
 
     if (restaurantExists) {
         res.status(400);
-        throw new Error('Restaurant account already exists with this email');
+        throw new Error('Bu e-posta ile restoran hesabı zaten mevcut');
     }
 
     const restaurant = await Restaurant.create({
@@ -43,7 +43,7 @@ const registerRestaurant = asyncHandler(async (req, res) => {
         });
     } else {
         res.status(400);
-        throw new Error('Invalid restaurant data');
+        throw new Error('Geçersiz restoran verisi');
     }
 });
 
@@ -69,7 +69,7 @@ const authRestaurant = asyncHandler(async (req, res) => {
         });
     } else {
         res.status(401);
-        throw new Error('Invalid email or password');
+        throw new Error('Geçersiz e-posta veya şifre');
     }
 });
 

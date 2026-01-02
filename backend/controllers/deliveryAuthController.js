@@ -13,7 +13,7 @@ const registerDelivery = asyncHandler(async (req, res) => {
 
   if (userExists) {
     res.status(400);
-    throw new Error('Delivery account already exists with this email');
+    throw new Error('Bu e-posta ile teslimatçı hesabı zaten mevcut');
   }
 
   // Create delivery user with minimal required fields (deliveryBalance defaults to 0)
@@ -36,7 +36,7 @@ const registerDelivery = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(400);
-    throw new Error('Invalid delivery data');
+    throw new Error('Geçersiz teslimatçı verisi');
   }
 });
 
@@ -60,7 +60,7 @@ const authDelivery = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(401);
-    throw new Error('Invalid email or password for delivery');
+    throw new Error('Teslimatçı için geçersiz e-posta veya şifre');
   }
 });
 

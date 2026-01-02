@@ -15,14 +15,14 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
   if (!orderItems || orderItems.length === 0) {
     res.status(400);
-    throw new Error('No order items found');
+    throw new Error('Sipariş öğesi bulunamadı');
   }
 
   // 1. Validate restaurant
   const restaurant = await Restaurant.findById(restaurantId);
   if (!restaurant || !restaurant.isActive) {
     res.status(404);
-    throw new Error('Restaurant not found or is currently closed');
+    throw new Error('Restoran bulunamadı veya şu anda kapalı');
   }
 
   // 2. Validate items and calculate total
@@ -34,7 +34,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
     if (!dbItem || dbItem.restaurant.toString() !== restaurantId) {
       res.status(404);
-      throw new Error(`Item ${item.menuItemId} not valid for this restaurant`);
+      throw new Error(`${item.menuItemId} Bu restorana ait olmayan geçersiz ürün`);
     }
 
     // Build the snapshot item for the order
@@ -69,7 +69,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
       } else {
           // Fallback if no sufficient address details are available
           res.status(400);
-          throw new Error('Customer address is required for the order.');
+          throw new Error('Sipariş için müşteri adresi gereklidir.');
       }
   }
 
@@ -187,7 +187,7 @@ const acceptDelivery = asyncHandler(async (req, res) => {
 
     if (!updatedOrder) {
         res.status(409); // Conflict
-        throw new Error('Order was claimed by another delivery person or status changed.');
+        throw new Error('Sipariş başka bir teslimatçı tarafından alındı veya durumu değişti.');
     }
 
     res.json(updatedOrder);
@@ -205,7 +205,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
   if (!order) {
     res.status(404);
-    throw new Error('Order not found');
+    throw new Error('Sipariş bulunamadı');
   }
 
   const currentStatus = order.status;
@@ -246,14 +246,14 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     
   if (userRole === 'restaurant' && order.restaurant.toString() !== req.user._id.toString()) {
       res.status(401);
-      throw new Error('Restaurant not authorized to modify this order');
+      throw new Error('Restoran bu siparişi düzenlemeye yetkili değil');
   }
   
   if (userRole === 'delivery') {
       // Must be the assigned delivery person for 'Delivered' transition
       if (!order.deliveryPerson || order.deliveryPerson.toString() !== req.user._id.toString()) {
           res.status(401);
-          throw new Error('Delivery person not authorized to modify this order (not assigned).');
+          throw new Error('Teslimatçı bu siparişi düzenlemeye yetkili değil (atanmamış).');
       }
   }
 
