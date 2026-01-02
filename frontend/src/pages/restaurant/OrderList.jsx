@@ -19,7 +19,7 @@ const statusTranslationMap = {
     Confirmed: 'Onaylandı',
     Preparing: 'Hazırlanıyor',
     'Out for Delivery': 'Teslim Alınmaya Hazır', // MODIFIED: Changed translation to reflect 'Ready for Pickup'
-    Delivering: 'Teslim Ediliyor', // ADDED
+    Delivering: 'Yolda', // ADDED
     Delivered: 'Teslim Edildi',
     Cancelled: 'İptal Edildi',
 };
